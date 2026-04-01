@@ -46,23 +46,21 @@
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
 
-    // Ukuran wallpaper HP (9:19.5 ratio)
     const W = 1080, H = 2340;
     canvas.width = W;
     canvas.height = H;
 
-    // Scale canvas display
     const maxW = Math.min(window.innerWidth - 40, 360);
     canvas.style.width = maxW + 'px';
     canvas.style.height = (maxW * H / W) + 'px';
 
-    const cx = W / 2, cy = H / 2 - 80;
-    const scale = 76;
+    const cx = W / 2;
+    const cy = H / 2;
+    const scale = 38;
 
     function heartX(t) { return 16 * Math.pow(Math.sin(t), 3); }
     function heartY(t) { return -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)); }
 
-    // Background gradient
     function drawBackground() {
       const grad = ctx.createRadialGradient(cx, cy, 100, cx, cy, 900);
       grad.addColorStop(0, '#2d0d1a');
@@ -70,27 +68,28 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
 
-      // Bintang-bintang kecil
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
-      const stars = [[120,200],[300,150],[800,180],[950,300],[200,500],[1000,450],[80,900],[1020,800],[150,1800],[900,1900],[300,2100],[700,2200]];
-      stars.forEach(([x,y]) => {
+      const starPos = [
+        [120,200],[300,150],[800,180],[950,300],[200,500],
+        [1000,450],[80,900],[1020,800],[150,1800],[900,1900],
+        [300,2100],[700,2200],[500,100],[650,400],[400,700],
+        [850,1100],[200,1400],[950,1600],[100,2000],[1000,2100]
+      ];
+      starPos.forEach(([x,y]) => {
+        ctx.fillStyle = `rgba(255,255,255,${0.3 + Math.random()*0.5})`;
         ctx.beginPath();
         ctx.arc(x, y, Math.random()*2+1, 0, Math.PI*2);
         ctx.fill();
       });
     }
 
-    const TOTAL = 3500;
+    const TOTAL = 3000;
     const lines = [];
     for (let i = 0; i < TOTAL; i++) {
       const t = (i / TOTAL) * Math.PI * 2;
       lines.push([cx + heartX(t) * scale, cy + heartY(t) * scale]);
     }
 
-    let idx = 0;
-    let raf = null;
-    let done = false;
-
+    let idx = 0, raf = null, done = false;
     drawBackground();
 
     function draw() {
@@ -134,18 +133,16 @@
     }
 
     function drawText() {
-      // Nama di atas
       ctx.textAlign = 'center';
+
       ctx.fillStyle = 'rgba(240,160,190,0.9)';
       ctx.font = '52px Georgia';
-      ctx.fillText('Faradilah', cx, cy - scale * 15.5);
+      ctx.fillText('Faradilah', cx, cy - scale * 15 - 60);
 
-      // Pesan di bawah hati
       ctx.font = '36px Georgia';
       ctx.fillStyle = 'rgba(200,120,160,0.75)';
       ctx.fillText('dengan sepenuh hati', cx, cy + scale * 15 + 80);
 
-      // Tanggal kecil
       const now = new Date();
       const tgl = now.toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
       ctx.font = '28px Georgia';
